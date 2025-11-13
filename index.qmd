@@ -44,26 +44,40 @@
 
 # Features of JSKOS
 
-## Example
+## Example: Concept (DDC)
 
 ~~~json
 {
-  "uri": "..."
+  "uri": "http://dewey.info/class/641/e23/",
+  "type": [ { "uri": "http://www.w3.org/2004/02/skos/core#Concept" } ],
+  "notation": [ "641" ],
   "prefLabel": {
-    "
+    "en": "Food & drink",
+    "de": "Essen und Trinken"
   }
 }
 ~~~
 
-## Object types
+## Example: Mapping (between DDC and Wikidata)
 
-- **Concepts** and **Concept Schemes**
-- **Mappings** and **Concordances**
-- **Occurrences** of 
-- **Registries**, **Distributions** and **Services**
-- Superclasses
-  - **Item** (named entity) and **Resource** (anything)
-  - **Concept bundles**
+~~~json
+{
+  "type": ["http://www.w3.org/2004/02/skos/core#exactMatch"],
+  "fromScheme": { "uri":"http://dewey.info/scheme/edition/e22/" },    
+  "toScheme": { "uri": "http://bartoc.org/en/node/1940" },
+  "from": {
+    "memberSet": [ { "uri": "http://dewey.info/class/641/e22/" } ]
+  },
+  "to": {
+    "memberSet": [ {
+      "uri": "http://www.wikidata.org/entity/Q118451828"
+      "prefLabel": { "en": "food and beverage" }
+      } ]
+  },
+  "justification": "https://w3id.org/semapv/vocab/ManualMappingCuration",
+  "tool": [ { "url": "https://coli-conc.gbv.de/cocoda/" } ]
+}
+~~~
 
 ## Concept bundles
 
@@ -75,7 +89,7 @@ Combination of concepts (e.g. early medieval cooking):
   "notation": [ "641.50902" ],
   "memberList": [ {
     "uri": "http://dewey.info/class/641/e23/",
-    "prefLabel": { "en": "Cooking" }
+    "prefLabel": { "en": "Food & drink" }
   }, {
     "uri": "http://dewey.info/class/1--0902/e23/",
     "prefLabel": { "en": "6th to 12th century (500-1199)" }
@@ -83,42 +97,70 @@ Combination of concepts (e.g. early medieval cooking):
 }
 ~~~
 
-## Concepts and Concept Schemes
+## Concept occurrences
 
-- Common fields found in
+~~~json
+{
+  "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
+  "memberSet": [ {
+    "uri": "http://dewey.info/class/641/e23/",
+    "prefLabel": { "en": "Fodd & drink" }
+   } ],
+  "count": 607,
+  "modified": "2025-11-17",
+  "url": "https://opac.k10plus.de/DB=2.299/CMD?ACT=SRCHA&IKT=3011&NOABS=Y&TRM=641"
+}
+~~~
 
+## JSKOS Object types
 
-- TODO: example
-- Mainly SKOS
-- Addition fields commonly found in terminologies:
-    - previous/next
-    - startDate/endDate
-    - location, media, address
-    - ...
-- Simplification to common denominator (just like SKOS)!
+- Superclasses
+  - **Item** (named entity) and **Resource** (anything)
+  - **Concept bundles** ✅
+- **Concepts** ✅ and **Concept Schemes**
+- **Mappings** ✅ and **Concordances**
+- **Occurrences** ✅ of Concepts 
+- **Registries**, **Distributions** and **Services** to collect and access
+- **Annotations** to evaluate and comment
 
-## Features of JSKOS
+## Common fields of JSKOS items 
 
-...such as concept occurrences, annotations, and qualified statements
+- Additional fields often found in knowledge organization:
+  - previous/next, 
+  - startDate/endDate
+  - location, address, media...
+  - identifier
+  - version, versionOf
+  - ...
+- Metadata fields
+  - creator, contributor, created, issued, modified
+  - deprecated, tool...
+- Fields linking JSKOS objects `inScheme`, `mappings`...
+- ...TODO
 
----------------
+## Closed world statements
 
+- Missing field: *unknown*
+- Empty array `[]`: *no value exists*
+- `null` value in array (`[..., null]`): *more values exist*
 
-## JSKOS API
+## Qualified statements
 
-- GET/POST/PUT/PATCH data in JSKOS format
-- terminologies, mappings, concordances... (see later)
-
-Not focus of this talk.
-
-## Applications & implementations
-
-- [Cocoda]
-- [BARTOC](https://bartoc.org/)
-- [DANTE](https://api.dante.gbv.de/) 
-- NFDI4Objects & TS4NFDI
-- Konsys
+- Inspired by Wikibase data model
+- Arbitrary fields, identified by URIs (hello, RDF!)
+- Optional ranking (preferred/normal/deprecated)
+- Flexibility & extensibility at cost of full interoperability
 - ...
+
+TODO: example
+
+# Applications of JSKOS
+
+## Use cases
+
+- [Cocoda](), [BARTOC](https://bartoc.org/), [DANTE](https://api.dante.gbv.de/)... at VZG 
+- NFDI4Objects & TS4NFDI
+- 2 or 3 implementations by third parties
 
 ## Applications & Libraries
 
@@ -129,16 +171,20 @@ Not focus of this talk.
 - jskos-cli: tools to validate and convert JSKOS data
 - ...
 
-## TODO: Diagram
+## JSKOS API
 
-- wrapper for terminologies
-- wrapper for mappings
-- JSKOS API
+Not focus of this talk.
 
+- GET/POST/PUT/PATCH data in JSKOS format
+- Read & write endpoints for concepts, mappings...
+- Multiple implementations (servers and clients)
 
----------------
+# Comparisions
 
+## Other knowledge graph formats
 
+- RDF*
+- Property graphs
 
 ## Why not JSON-LD?
 
@@ -175,23 +221,25 @@ JSON-LD + JSON Schema => well-defined data usable both as plain JSON and as RDF 
 
 Example: repeatable fields are always arrays.
 
-## Inspiration from Wikibase data model
+## When to use
 
 ...
 
-## Comparision
+## SOme limitations
 
-## When to use
-
-One-man show
-
-NFDI
-
-VZG
+- Labels MUST have language tag (use `und` for undefined)
+- Notations don't have data types
+- Some fields are about the concept (`uri`, `prefLabel`...),
+  some about its metadata (`creator`, `modified`...), some about the conceptual entity
+  (`startDate`, `location`...)
+- Wikibase data model only covered partially
+- Specification document is a one-man show
 
 ## Wish/idea
 
-Specify a subset of JSKOS as official JSON(-LD) for SKOS
+- JSKOS 0.7.0 being worked on (see issue tracker)
+- Idea: specify a subset of JSKOS as official JSON(-LD) schema/context for SKOS
+- Ongoing integration also beyond VZG
 
 ## Acknowledgements
 
