@@ -2,26 +2,28 @@
 
 ## Terminology
 
-- *Such as*: Classifications, thesauri, ontologies, subject authority files...
-- *Known as:* Terminologies, Knowledge Organization Systems, Semantic Artefacts, Concept Schemes...
-- *Core idea*: Things, not strings
-- *Done with*: URIs, labels & links between
+- **Such as**: Classifications, thesauri, ontologies, subject authority files...
+- **Known as**: Terminologies, Knowledge Organization Systems, Semantic Artefacts, Concept Schemes...
+- **Core idea**: Things, not strings
+- **Done with**: URIs, labels & links between
 
 ## JSKOS In a nutshell
 
-- Encoding SKOS and related artefacts (concepts, mappings, concordances...) in JSON
+- Encoding SKOS and related artefacts\
+  (concepts, mappings, concordances...) in JSON
 - Knowledge graph data format with focus on knowledge organization systems
 - Established infrastructure for controlled vocabularies at VZG
 - Mature specification at <https://gbv.github.io/jskos/>
 
 ## Background and motivation
 
-- Project **coli-conc** (2013-): infrastructure for (mappings between) knowledge organization systems
+- Project **coli-conc** (2013-): infrastructure for\
+  (mappings between) knowledge organization systems
 - **Cocoda** web application for mapping:
     - Design based on service-oriented architecture (SOA)
-    - No server but everything (terminologies, mappings, accounts...) loosely coupled via APIs
-    - ⇒ JSON
-- Integration of federated data ⇒ RDF
+    - Everything (terminologies, mappings, accounts...) loosely coupled via APIs in the client
+    - $\Rightarrow$ JSON
+- Integration of federated data $\Rightarrow$ RDF
 
 ## Influences and references
 
@@ -30,7 +32,7 @@
 - Skosmos API and similar
 - Wikibase Data Model
 - [Web Annotation Data Model](https://www.w3.org/TR/annotation-model/) for annotations
-- [GeoJSON] for geospatial data
+- [GeoJSON](https://geojson.org/) for geospatial data
 - [IIIF](https://iiif.io/api/presentation/3.0/) for media
 - DCAT(-AP), vCard, XKOS, SSSOM...
 
@@ -38,90 +40,105 @@
 
 - Use exising standards (e.g. SKOS)
 - Use URIs if possible
-- Repeatable fields ⇔  arrays
+- Repeatable fields = arrays
 - Standard first, implementation with tests and validation
 - New features only with use case and data from practice
 
-# Features of JSKOS
+# JSKOS Features: Examples
 
-## Example: Concept (DDC)
+## Concepts
 
-~~~json
+```json
 {
-  "uri": "http://dewey.info/class/641/e23/",
-  "type": [ { "uri": "http://www.w3.org/2004/02/skos/core#Concept" } ],
+  "type": [
+    "http://www.w3.org/2004/02/skos/core#Concept"
+  ],
   "notation": [ "641" ],
+  "uri": "http://dewey.info/class/641/e23/",
   "prefLabel": {
     "en": "Food & drink",
     "de": "Essen und Trinken"
   }
 }
-~~~
+```
 
-## Example: Mapping (between DDC and Wikidata)
+Class **641** from Dewey Decimal Classification (DDC)
 
-~~~json
+## Mappings
+
+\footnotesize
+
+```json
 {
-  "type": ["http://www.w3.org/2004/02/skos/core#exactMatch"],
-  "fromScheme": { "uri":"http://dewey.info/scheme/edition/e22/" },    
-  "toScheme": { "uri": "http://bartoc.org/en/node/1940" },
+  "type": [ "http://www.w3.org/2004/02/skos/core#exactMatch" ],
   "from": {
-    "memberSet": [ { "uri": "http://dewey.info/class/641/e22/" } ]
+    "memberSet": [ {
+      "uri": "http://dewey.info/class/641/e22/",
+      "prefLabel": { "en": "Food & drink" }
+    } ]
   },
   "to": {
     "memberSet": [ {
-      "uri": "http://www.wikidata.org/entity/Q118451828"
+      "uri": "http://www.wikidata.org/entity/Q118451828",
       "prefLabel": { "en": "food and beverage" }
-      } ]
+    } ]
   },
-  "justification": "https://w3id.org/semapv/vocab/ManualMappingCuration",
+  "justification":
+      "https://w3id.org/semapv/vocab/ManualMappingCuration",
   "tool": [ { "url": "https://coli-conc.gbv.de/cocoda/" } ]
 }
-~~~
+```
 
-## Concept bundles
+## Concept Bundles
 
-Combination of concepts (e.g. early medieval cooking):
-
-~~~json
+```json
 {
   "uri": "http://dewey.info/class/641.50902/e23/",
   "notation": [ "641.50902" ],
   "memberList": [ {
-    "uri": "http://dewey.info/class/641/e23/",
-    "prefLabel": { "en": "Food & drink" }
-  }, {
-    "uri": "http://dewey.info/class/1--0902/e23/",
-    "prefLabel": { "en": "6th to 12th century (500-1199)" }
+      "uri": "http://dewey.info/class/641/e23/",
+      "prefLabel": { "en": "Food & drink" }
+    }, {
+      "uri": "http://dewey.info/class/1--0902/e23/",
+      "prefLabel": {
+        "en": "6th to 15th century (500-1499)" 
+      }
   } ]
 }
-~~~
+```
 
-## Concept occurrences
+Combined DDC class for "medieval cuisine"
 
-~~~json
+## Concept Occurrences
+
+```json
 {
-  "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
+  "database": {
+    "uri": "http://uri.gbv.de/database/opac-de-627"
+  },
   "memberSet": [ {
-    "uri": "http://dewey.info/class/641/e23/",
+    "uri": "http://dewey.info/class/641.50902/e23/",
     "prefLabel": { "en": "Fodd & drink" }
    } ],
-  "count": 607,
+  "count": 18,
   "modified": "2025-11-17",
   "url": "https://opac.k10plus.de/DB=2.299/CMD?ACT=SRCHA&IKT=3011&NOABS=Y&TRM=641"
 }
-~~~
+```
+
+18 records on medieval cuisine in K10plus catalogue
+
+# JSKOS Features: Overview
 
 ## JSKOS Object types
 
 - Superclasses
   - **Item** (named entity) and **Resource** (anything)
-  - **Concept bundles** ✅
-- **Concepts** ✅ and **Concept Schemes**
-- **Mappings** ✅ and **Concordances**
-- **Occurrences** ✅ of Concepts 
+  - _**Concept Bundles**_ (combined concepts)
+- _**Concepts**_ and **Concept Schemes**
+- _**Mappings**_ and **Concordances**
+- _**Occurrences**_ of Concepts
 - **Registries**, **Distributions** and **Services** to collect and access
-- **Annotations** to evaluate and comment
 
 ## Common fields of JSKOS items 
 
@@ -131,6 +148,7 @@ Combination of concepts (e.g. early medieval cooking):
   - location, address, media...
   - identifier
   - version, versionOf
+  - annotations
   - ...
 - Metadata fields
   - creator, contributor, created, issued, modified
@@ -176,8 +194,8 @@ TODO: example
 Not focus of this talk.
 
 - GET/POST/PUT/PATCH data in JSKOS format
-- Read & write endpoints for concepts, mappings...
-- Multiple implementations (servers and clients)
+- Read & write endpoints for concepts, mappings, annotations...
+- Multiple implementations exist (servers and clients)
 
 # Comparisions
 
@@ -225,22 +243,21 @@ Example: repeatable fields are always arrays.
 
 ...
 
-## SOme limitations
+## Some limitations
 
 - Labels MUST have language tag (use `und` for undefined)
 - Notations don't have data types
 - Some fields are about the concept (`uri`, `prefLabel`...),
   some about its metadata (`creator`, `modified`...), some about the conceptual entity
   (`startDate`, `location`...)
+- No support of SKOS Collections (yet?)
 - Wikibase data model only covered partially
 - Specification document is a one-man show
 
 ## Wish/idea
 
-- JSKOS 0.7.0 being worked on (see issue tracker)
+- JSKOS 0.7.0 being worked on (see issue tracker: Link templates)
 - Idea: specify a subset of JSKOS as official JSON(-LD) schema/context for SKOS
 - Ongoing integration also beyond VZG
 
-## Acknowledgements
-
-...
+# Please ask & try out!
