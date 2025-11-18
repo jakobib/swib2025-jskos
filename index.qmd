@@ -2,18 +2,19 @@
 
 ## Terminology
 
-- **Such as**: Classifications, thesauri, ontologies, subject authority files...
-- **Known as**: Terminologies, Knowledge Organization Systems, Semantic Artefacts, Concept Schemes...
-- **Core idea**: Things, not strings
+- **Such as**: classifications, thesauri, ontologies...
+- **Known as**: terminologies, knowledge organization systems, semantic artefacts, concept schemes, knowledge graphs...
+- **Core idea**: things, not strings
 - **Done with**: URIs, labels & links between
 
 ## JSKOS In a nutshell
 
 - Encoding SKOS and related artefacts\
   (concepts, mappings, concordances...) in JSON
-- Knowledge graph data format with focus on knowledge organization systems
+- Knowledge graph data format with focus on terminologies
 - Established infrastructure for controlled vocabularies at VZG
-- Mature specification at <https://gbv.github.io/jskos/>
+- Mature specification at <https://gbv.github.io/jskos/>\
+  JSKOS 0.7.0 just released yesterday
 
 ## Background and motivation
 
@@ -21,30 +22,22 @@
   (mappings between) knowledge organization systems
 - **Cocoda** web application for mapping:
     - Design based on service-oriented architecture (SOA)
-    - Everything (terminologies, mappings, accounts...) loosely coupled via APIs in the client
-    - $\Rightarrow$ JSON
+    - Terminologies, mappings, accounts...\
+      loosely coupled via APIs in the client $\Rightarrow$ JSON
 - Integration of federated data $\Rightarrow$ RDF
 
 ## Influences and references
 
-- **SKOS** for core classes and properties only
-- **JSON-LD** for mapping to RDF
-- Skosmos API and similar
-- Wikibase Data Model
-- [Web Annotation Data Model](https://www.w3.org/TR/annotation-model/) for annotations
-- [GeoJSON](https://geojson.org/) for geospatial data
-- [IIIF](https://iiif.io/api/presentation/3.0/) for media
-- DCAT(-AP), vCard, XKOS, SSSOM...
+- **SKOS** for core classes and properties
+- **JSON-LD** and existing ontologies (DCAT, vCard, XKOS, SSSOM...) for URIs and mapping to RDF
+- Skosmos and other **APIs**
+- **Wikibase** Data Model
+- **Standards**: [Web Annotation Data Model](https://www.w3.org/TR/annotation-model/) for annotations,
+  [GeoJSON](https://geojson.org/) for geospatial data,
+  [IIIF](https://iiif.io/api/presentation/3.0/) for media,
+  RFC 6570 for URI Templates, XSD for Data Types...
 
-## Some design guidelines
-
-- Use exising standards (e.g. SKOS)
-- Use URIs if possible
-- Repeatable fields = arrays
-- Standard first, implementation with tests and validation
-- New features only with use case and data from practice
-
-# JSKOS Features: Examples
+# JSKOS Features by examples
 
 ## Concepts
 
@@ -128,7 +121,7 @@ Combined DDC class for "medieval cuisine"
 
 18 records on medieval cuisine in K10plus catalogue
 
-# JSKOS Features: Overview
+# JSKOS Overview
 
 ## JSKOS Object types
 
@@ -139,125 +132,144 @@ Combined DDC class for "medieval cuisine"
 - _**Mappings**_ and **Concordances**
 - _**Occurrences**_ of Concepts
 - **Registries**, **Distributions** and **Services** to collect and access
+- Subsets of JSON formats IIIF, GeoJSON, and Web Annotation
 
 ## Common fields of JSKOS items 
 
-- Additional fields often found in knowledge organization:
-  - previous/next, 
-  - startDate/endDate
-  - location, address, media...
-  - identifier
-  - version, versionOf
-  - annotations
-  - ...
-- Metadata fields
-  - creator, contributor, created, issued, modified
-  - deprecated, tool...
-- Fields linking JSKOS objects `inScheme`, `mappings`...
-- ...TODO
-
-## Closed world statements
-
-- Missing field: *unknown*
-- Empty array `[]`: *no value exists*
-- `null` value in array (`[..., null]`): *more values exist*
+- prefLabel, altLabel...
+- identifier
+- previous, next
+- startDate, endDate
+- location, address, media...
+- version, versionOf
+- ...
 
 ## Qualified statements
 
-- Inspired by Wikibase data model
-- Arbitrary fields, identified by URIs (hello, RDF!)
-- Optional ranking (preferred/normal/deprecated)
-- Flexibility & extensibility at cost of full interoperability
-- ...
+![](qualified-statements.png)
 
-TODO: example
+## Qualified statements
+
+\small
+
+~~~json
+{ "prefLabel": { "en": "Göttingen" },
+  "qualifiedRelations": {
+    "http://www.wikidata.org/entity/P17": [ {
+      "resource": {
+        "uri": "http://www.wikidata.org/entity/Q183",
+        "prefLabel": { "en": "Germany" }
+      },
+      "rank": "preferred",
+      "startDate": "1990-10-03",
+      "source": [ { ... } ]
+    }, { 
+      "resource": {
+        "uri": "http://www.wikidata.org/entity/Q713750",
+        "prefLabel": { "en": "West Germany" }
+      },
+      "rank": "normal",
+      "startDate": "1949-05-23", "endDate": "1990-10-02" } ] } }
+~~~
+
+## Qualified statements
+
+::: {.nonincremental}
+
+- Inspired by Wikibase data model
+- Ranking (`preferred`/`normal`/`deprecated`)
+- References
+- Arbitrary fields, identified by URIs\
+  $\Rightarrow$ Full knowledge graph format
+- Flexibility & extensibility at cost of full interoperability
+
+:::
+
+## Closed world statements
+
+::: {.nonincremental}
+
+- *missing field*: unknown
+- `[]`: no value exists
+- `[..., null]`: more values exist
+
+:::
 
 # Applications of JSKOS
 
 ## Use cases
 
-- [Cocoda](), [BARTOC](https://bartoc.org/), [DANTE](https://api.dante.gbv.de/)... at VZG 
+- [Cocoda](https://coli-conc.gbv.de/cocoda/),
+  [BARTOC](https://bartoc.org/),
+  [DANTE](https://api.dante.gbv.de/)... at VZG 
 - NFDI4Objects & TS4NFDI
-- 2 or 3 implementations by third parties
+- Slowly being adopted outside of VZG\
+  (2 or 3 implementations)
 
 ## Applications & Libraries
 
-- jskos-server: DBMS to store JSKOS data
-- jskos-vue: widgets to nicely display JSKOS objects in browser (e.g. tree)
-- jskos-proxy: serve and browse JSKOS data (terminologies) as Linked Open Data
-- jskos-tools: helper functions for JSKOS data
-- jskos-cli: tools to validate and convert JSKOS data
-- ...
+- **jskos-server**: DBMS to store JSKOS data
+- **jskos-vue**: widgets to nicely display JSKOS objects in browser (e.g. tree)
+- **jskos-proxy**: serve and browse JSKOS data (terminologies) as Linked Open Data
+- **jskos-tools**: helper functions for JSKOS data
+- **jskos-cli**: tools to validate and convert JSKOS data
+- **subjects-api**: query subject indexing of K10plus catalogue in JSKOS via JSKOS-API
 
 ## JSKOS API
 
-Not focus of this talk.
+Relevant, but not focus of this talk.
 
 - GET/POST/PUT/PATCH data in JSKOS format
-- Read & write endpoints for concepts, mappings, annotations...
-- Multiple implementations exist (servers and clients)
+- Defined read & write endpoints for\
+  concepts, mappings, annotations...
+- Optional authentification included
+- Multiple implementations exist (servers and clients)!
 
-# Comparisions
+# Beyond JSKOS
 
-## Other knowledge graph formats
-
-- RDF*
-- Property graphs
-
-## Why not JSON-LD?
-
-- JSON-LD 1.0 released July 2012 to January 2014
-- JSKOS 0.0.1 released in September 2014, prior work in 2013
-- JSON-LD has limitations
-- RDF was not our priority except for Linked Data principle 1: *Use URIs as names for things*
-
-## JSON-LD has limitations
-
-Common misunderstanding:
-
-Parse JSON-LD with an RDF => syntax is secondary
-
-RDF is just a secondary
-
-- Use of JSON format without JSON Schema is limited
-
-JSON-LD is
-
-- 👍 writing RDF
-- 👍 reading RDF
-- 👎 well-defined key-value structure
-
-## JSKOS is also JSON-LD
-
-- JSKOS can be & is processed as JSON-LD with a non-normative \@context document to get RDF
-- Some JSKOS fields require additional processing step or agreement on which property URIs to use
-
-
-## End of opinion about JSON-LD
-
-JSON-LD + JSON Schema => well-defined data usable both as plain JSON and as RDF graph
-
-Example: repeatable fields are always arrays.
-
-## When to use
-
-...
-
-## Some limitations
+## Some limitations of JSKOS
 
 - Labels MUST have language tag (use `und` for undefined)
 - Notations don't have data types
-- Some fields are about the concept (`uri`, `prefLabel`...),
-  some about its metadata (`creator`, `modified`...), some about the conceptual entity
-  (`startDate`, `location`...)
 - No support of SKOS Collections (yet?)
+- Fields about entities and metadata are mixed\
+  (e.g. `startDate` vs. `created`)
 - Wikibase data model only covered partially
-- Specification document is a one-man show
+- No standards body behind the specification
 
-## Wish/idea
+## Alternatives
 
-- JSKOS 0.7.0 being worked on (see issue tracker: Link templates)
-- Idea: specify a subset of JSKOS as official JSON(-LD) schema/context for SKOS
-- Ongoing integration also beyond VZG
+- Plain RDF or RDF*
+- JSON-LD
+- Property Graphs
+
+## Limitations of RDF
+
+*Most elements of JSKOS can directly be mapped from/to RDF!*
+
+- Agreement on global URIs required
+- Triple store required to access data
+- Reification (e.g. data about about mappings)
+- RDF* adds more complexity
+
+## Limitations of JSON-LD
+
+*Most of JSKOS is JSON-LD, there is a non-normative JSON-LD context!*
+
+- Triple store required to access data (?!)
+- Multiple ways to express the same data
+- Only JSON Schema can guarantee a strict JSON format
+
+## Property graphs
+
+- Easier to work with than RDF/SPARQL (tools)
+- Not for merging data
+- No standard data format exists (see [Property Graph Exchange Format](https://pg-format.github.io/specification/) for a proposal)
+
+## When to use JSKOS
+
+- Access to terminology APIs from VZG, in particular mappings
+- Processing of semantic artefacts in JSON
+- RDF compatibility without RDF technology stack
 
 # Please ask & try out!
