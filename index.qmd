@@ -1,3 +1,11 @@
+---
+title: Purpose and properties of the JSKOS data format for knowledge graphs
+shorttitle: JSKOS Data Format at SWIB
+subtitle: SWIB 2025 conference
+date: 2025-11-19
+author: Jakob Voß
+---
+
 # Introduction
 
 ## Terminology
@@ -11,7 +19,6 @@
 
 - Encoding SKOS and related artefacts\
   (concepts, mappings, concordances...) in JSON
-- Knowledge graph data format with focus on terminologies
 - Established infrastructure for controlled vocabularies at VZG
 - Mature specification at <https://gbv.github.io/jskos/>\
   JSKOS 0.7.0 just released yesterday
@@ -20,10 +27,8 @@
 
 - Project **coli-conc** (2013-): infrastructure for\
   (mappings between) knowledge organization systems
-- **Cocoda** web application for mapping:
-    - Design based on service-oriented architecture (SOA)
-    - Terminologies, mappings, accounts...\
-      loosely coupled via APIs in the client $\Rightarrow$ JSON
+- **Cocoda** web application combines terminologies, mappings, annotations
+  via APIs in the client $\Rightarrow$ JSON
 - Integration of federated data $\Rightarrow$ RDF
 
 ## Influences and references
@@ -249,7 +254,7 @@ Relevant, but not focus of this talk.
 
 - Agreement on global URIs required
 - Triple store required to access data
-- Reification (e.g. data about about mappings)
+- Reification (e.g. data about mappings)
 - RDF* adds more complexity
 
 ## Limitations of JSON-LD
